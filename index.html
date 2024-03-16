@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        GYM LifterCalc - IPF GL | DOTS | WILKS Calculator
+    </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tool for powerlifters to calculate IPF GL, DOTS, Wilks-2, IPF, and Wilks Scores">
+    <script>
+        /*  LifterCalc calculates various strength coefficients used to compare powerlifters.
+            Copyright (C) 2020  Perlin
+
+            This program is free software: you can redistribute it and/or modify
+            it under the terms of the GNU Affero General Public License as
+            published by the Free Software Foundation, either version 3 of the
+            License, or (at your option) any later version.
+
+            This program is distributed in the hope that it will be useful,
+            but WITHOUT ANY WARRANTY; without even the implied warranty of
+            MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+            GNU Affero General Public License for more details.
+
+            You should have received a copy of the GNU Affero General Public License
+            along with this program.  If not, see <https://www.gnu.org/licenses/>.
+         */
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&display=swap" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+    <style type="text/css">
+        body {
+            font-family: 'Open Sans', sans-serif;
+            /*background-color: #333333;
+            color: #eeeeee;*/
+        }
+
+        a {
+            color: inherit;
+        }
+
+        #container {
+            margin: 0 auto;
+            max-width: 750px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        #app {
+            margin-bottom: 200px;
+        }
+
+        .bold-label {
+            font-weight: bold;
+            font-size: 14px;
+            display: inline-block;
+        }
+
+        label {
+            font-weight: normal;
+            font-size: 18px;
+        }
+
+        .half-width {
+            width: 50%;
+            float: left;
+        }
+
+        .width-40 {
+            width: 40%;
+            float: right;
+        }
+
+        .radio-selection {
+            margin-bottom: 10px;
+        }
+
+        .margintop-4 {
+            margin-top: 4px;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            background: #EBEBEB;
+            border: none;
+            font-size: 16px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            -moz-appearance: textfield;
+        }
+
+        input[type=submit] {
+            background-color: #EBEBEB;
+            border: none;
+            padding: 16px 32px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 15px;
+        }
+
+        input[type=radio] {
+            vertical-align: text-top;
+            margin-top: 4px;
+        }
+
+        input {
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .clear {
+            clear: both;
+        }
+
+        .padding-5-0 {
+            padding: 5px 0;
+        }
+
+        h1 {
+            font-size: 64px;
+            font-weight: normal;
+            margin: 0;
+            cursor: default;
+        }
+
+        .error {
+            color: #ff0033;
+        }
+
+        .footer {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .horizontal-line {
+            width: 100%;
+            border-style: none none solid none;
+            border-color: #000000;
+            border-width: thin;
+            padding-top: 10px;
+            margin-bottom: 5px;
+        }
+
+        .small-label {
+            font-size: 14px;
+            line-height: 150%;
+        }
+
+        .result-box {
+            display: inline-block;
+            border: 1px solid #D3D3D3;
+            border-radius: 5px;
+            padding: 8px 12px;
+            width: 275px;
+            margin-bottom: 20px;
+        }
+
+        .score-box {
+            float: left;
+            width: 30%;
+            margin-top: 10px;
+        }
+
+        .weight {
+            font-weight: bold;
+        }
+
+        .score {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .info {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .toggle {
+            display: inline-block;
+            cursor: pointer;
+            float: right;
+            padding: 0 5px;
+            font-weight: bold;
+        }
+
+        .full-width {
+            display: inline-block;
+            width: 100%;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .flex-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .history-panel {
+            width: 326px;
+            padding: 10px 20px;
+            background-color: #eeeeee;
+            border-radius: 5px;
+        }
+
+        form {
+            width: 350px;
+            margin: 0 20px 20px 0;
+        }
+
+        .flex-container {
+            display: flex;
+        }
+
+        .bold-label {
+            font-weight: bold;
+        }
+
+
+        .half-width {
+            width: 50%;
+        }
+
+        .clear {
+            clear: both;
+        }
+
+        .padding-5-0 {
+            padding: 5px 0;
+        }
+
+        .margintop-4 {
+            margin-top: 4px;
+        }
+
+        .width-40 {
+            width: 40%;
+        }
+
+        .error {
+            color: red;
+        }
+
+        /* .horizontal-line {
+  border-top: 1px solid black;
+} */
+
+        .small-label {
+            font-size: 12px;
+        }
+
+        .history-panel {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .weight {
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        .toggle {
+            cursor: pointer;
+            float: right;
+            padding: 2px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <center>
+    <div class="info" style="padding: 20px; background-color: blue; color:white; border-radius: 20px; margin: 10px; font-weight: 700;">Enter information to calculate your IPF-GL, Wilks, and DOTS scores</div>
+</center>
+    <div id="container">
+        <img src="./weightlifting.png" height="50px" style="padding: 15px;" alt="">
+        <h1>LifterCalc</h1>
+        
+        <div class="flex-container" id="app">
+            <div id="userData">
+                <form id="userDataForm" onsubmit="event.preventDefault(); calculateScores();">
+                    <div class="radio-selection">
+                        <div class="bold-label">Gender</div>
+                        <br>
+                        <div class="half-width">
+                            <input id="male" type="radio" name="gender" value="false" checked>
+                            <label for="male">Male</label>
+                        </div>
+                        <div class="half-width">
+                            <input id="female" type="radio" name="gender" value="true">
+                            <label for="female">Female</label>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="clear padding-5-0"></div>
+                    <div class="radio-selection">
+                        <div class="bold-label">Units</div>
+                        <br>
+                        <div class="half-width">
+                            <input id="kg" type="radio" name="unit" value="true" checked>
+                            <label for="kg">Kilograms (KG)</label>
+                        </div>
+                        <div class="half-width">
+                            <input id="lb" type="radio" name="unit" value="false">
+                            <label for="lb">Pounds (LB)</label>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="clear padding-5-0"></div>
+                    <div class="bold-label">Weight</div>
+                    <br>
+                    <label class="half-width margintop-4" for="bodyWeight">Body Weight:</label>
+                    <input class="width-40" id="bodyWeight" type="number" placeholder="150" step="0.01">
+                    <div class="clear padding-5-0"></div>
+                    <label class="half-width margintop-4" for="weightLifted">Weight Lifted:</label>
+                    <input class="width-40" id="weightLifted" type="number" placeholder="300" max="99999" min="0"
+                        step="0.01">
+                    <div class="clear padding-5-0 error horizontal-line" id="errorMessage"></div>
+                    <div>
+                        <span class="small-label">These values only used in IPF GL and IPF calculations:</span>
+                        <div class="clear padding-5-0"></div>
+                        <div class="radio-selection">
+                            <div class="bold-label">Event:</div>
+                            <br>
+                            <div class="half-width">
+                                <input id="classic" type="radio" name="event" value="CL" checked>
+                                <label for="classic">Classic/Raw</label>
+                            </div>
+                            <div class="half-width">
+                                <input id="equipped" type="radio" name="event" value="EQ">
+                                <label for="equipped">Equipped</label>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="clear padding-5-0"></div>
+                        <div class="radio-selection">
+                            <div class="bold-label">Category:</div>
+                            <br>
+                            <div class="half-width">
+                                <input id="full" type="radio" name="category" value="PL" checked>
+                                <label for="full">Full Meet</label>
+                            </div>
+                            <div class="half-width">
+                                <input id="bench" type="radio" name="category" value="BN">
+                                <label for="bench">Bench Only</label>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                    <input type="submit" class="bold-label" value="Calculate Scores">
+                </form>
+            </div>
+            <div id="resultHistory" class="history-panel">
+                <div class="bold-label padding-5-0">Your Score</div>
+            </div>
+        </div>
+    </div>
+    <script>
+
+        // Function to calculate Old Wilks score
+        function Calculate_OldWilks(bodyWeight, weightLifted, isFemale) {
+            const maleCoeff = [
+                -216.0475144,
+                16.2606339,
+                -0.002388645,
+                -0.00113732,
+                7.01863e-6,
+                -1.291e-8,
+            ];
+            const femaleCoeff = [
+                594.31747775582,
+                -27.23842536447,
+                0.82112226871,
+                -0.00930733913,
+                4.731582e-5,
+                -9.054e-8,
+            ];
+            let denominator = isFemale ? femaleCoeff[0] : maleCoeff[0];
+            let coeff = isFemale ? femaleCoeff : maleCoeff;
+            let minbw = isFemale ? 26.51 : 40;
+            let maxbw = isFemale ? 154.53 : 201.9;
+            let bw = Math.min(Math.max(bodyWeight, minbw), maxbw);
+
+            for (let i = 1; i < coeff.length; i++) {
+                denominator += coeff[i] * Math.pow(bw, i);
+            }
+
+            let score = (500 / denominator) * weightLifted;
+            return score.toFixed(2);
+        }
+
+        // Function to calculate New Wilks score
+        function Calculate_NewWilks(bodyWeight, weightLifted, isFemale) {
+            const maleCoeff = [
+                47.4617885411949,
+                8.47206137941125,
+                0.073694103462609,
+                -1.39583381094385e-3,
+                7.07665973070743e-6,
+                -1.20804336482315e-8,
+            ];
+            const femaleCoeff = [
+                -125.425539779509,
+                13.7121941940668,
+                -0.0330725063103405,
+                -1.0504000506583e-3,
+                9.38773881462799e-6,
+                -2.3334613884954e-8,
+            ];
+            let denominator = isFemale ? femaleCoeff[0] : maleCoeff[0];
+            let coeff = isFemale ? femaleCoeff : maleCoeff;
+            let minbw = 40;
+            let maxbw = isFemale ? 150.95 : 200.95;
+            let bw = Math.min(Math.max(bodyWeight, minbw), maxbw);
+
+            for (let i = 1; i < coeff.length; i++) {
+                denominator += coeff[i] * Math.pow(bw, i);
+            }
+
+            let score = (600 / denominator) * weightLifted;
+            return score.toFixed(2);
+        }
+
+        // Function to calculate DOTS score
+        function Calculate_DOTS(bodyWeight, weightLifted, isFemale) {
+            const maleCoeff = [
+                -307.75076,
+                24.0900756,
+                -0.1918759221,
+                0.0007391293,
+                -0.000001093,
+            ];
+            const femaleCoeff = [
+                -57.96288,
+                13.6175032,
+                -0.1126655495,
+                0.0005158568,
+                -0.0000010706,
+            ];
+
+            let denominator = isFemale ? femaleCoeff[0] : maleCoeff[0];
+            let coeff = isFemale ? femaleCoeff : maleCoeff;
+            let maxbw = isFemale ? 150 : 210;
+            let bw = Math.min(Math.max(bodyWeight, 40), maxbw);
+
+            for (let i = 1; i < coeff.length; i++) {
+                denominator += coeff[i] * Math.pow(bw, i);
+            }
+
+            let score = (500 / denominator) * weightLifted;
+            return score.toFixed(2);
+        }
+
+        // Function to calculate IPF score
+        function Calculate_IPF(bodyWeight, weightLifted, isFemale, competition) {
+            const maleCoeffCLPL = [310.67, 857.785, 53.216, 147.0835];
+            const maleCoeffCLBN = [86.4745, 259.155, 17.5785, 53.122];
+            const maleCoeffEQPL = [387.265, 1121.28, 80.6324, 222.4896];
+            const maleCoeffEQBN = [133.94, 441.465, 35.3938, 113.0057];
+
+            const femaleCoeffCLPL = [125.1435, 228.03, 34.5246, 86.8301];
+            const femaleCoeffCLBN = [25.0485, 43.848, 6.7172, 13.952];
+            const femaleCoeffEQPL = [176.58, 373.315, 48.4534, 110.0103];
+            const femaleCoeffEQBN = [49.106, 124.209, 23.199, 67.4926];
+
+            let coeff;
+            if (isFemale) {
+                switch (competition) {
+                    case "CLBN":
+                        coeff = femaleCoeffCLBN;
+                        break;
+                    case "EQPL":
+                        coeff = femaleCoeffEQPL;
+                        break;
+                    case "EQBN":
+                        coeff = femaleCoeffEQBN;
+                        break;
+                    case "CLPL":
+                    default:
+                        coeff = femaleCoeffCLPL;
+                        break;
+                }
+            } else {
+                switch (competition) {
+                    case "CLBN":
+                        coeff = maleCoeffCLBN;
+                        break;
+                    case "EQPL":
+                        coeff = maleCoeffEQPL;
+                        break;
+                    case "EQBN":
+                        coeff = maleCoeffEQBN;
+                        break;
+                    case "CLPL":
+                    default:
+                        coeff = maleCoeffCLPL;
+                        break;
+                }
+            }
+            if (bodyWeight < 40) return "0.00";
+
+            let lnbw = Math.log(bodyWeight);
+            let score =
+                500 +
+                100 *
+                ((weightLifted - (coeff[0] * lnbw - coeff[1])) /
+                    (coeff[2] * lnbw - coeff[3]));
+            return score < 0 ? "0.00" : score.toFixed(2);
+        }
+
+        // Function to calculate IPF-GL score
+        function Calculate_IPFGL(bodyWeight, weightLifted, isFemale, competition) {
+            const maleCoeffCLPL = [1199.72839, 1025.18162, 0.00921];
+            const maleCoeffCLBN = [320.98041, 281.40258, 0.01008];
+            const maleCoeffEQPL = [1236.25115, 1449.21864, 0.01644];
+            const maleCoeffEQBN = [381.22073, 733.79378, 0.02398];
+
+            const femaleCoeffCLPL = [610.32796, 1045.59282, 0.03048];
+            const femaleCoeffCLBN = [142.40398, 442.52671, 0.04724];
+            const femaleCoeffEQPL = [758.63878, 949.31382, 0.02435];
+            const femaleCoeffEQBN = [221.82209, 357.00377, 0.02937];
+
+            let coeff;
+            if (isFemale) {
+                switch (competition) {
+                    case "CLBN":
+                        coeff = femaleCoeffCLBN;
+                        break;
+                    case "EQPL":
+                        coeff = femaleCoeffEQPL;
+                        break;
+                    case "EQBN":
+                        coeff = femaleCoeffEQBN;
+                        break;
+                    case "CLPL":
+                    default:
+                        coeff = femaleCoeffCLPL;
+                        break;
+                }
+            } else {
+                switch (competition) {
+                    case "CLBN":
+                        coeff = maleCoeffCLBN;
+                        break;
+                    case "EQPL":
+                        coeff = maleCoeffEQPL;
+                        break;
+                    case "EQBN":
+                        coeff = maleCoeffEQBN;
+                        break;
+                    case "CLPL":
+                    default:
+                        coeff = maleCoeffCLPL;
+                        break;
+                }
+            }
+
+            if (bodyWeight < 35) return "0.00";
+
+            let power = -coeff[2] * bodyWeight;
+            let score =
+                weightLifted * (100 / (coeff[0] - coeff[1] * Math.pow(Math.E, power)));
+            return score < 0 ? "0.00" : score.toFixed(2);
+        }
+
+        // Function to calculate powerlifting scores based on body weight, weight lifted, gender, and competition type
+        function GetScores(bodyWeight, weightLifted, isKG, isFemale, competition) {
+            // Convert weight to kg if it's in pounds
+            if (!isKG) {
+                weightLifted /= 2.20462;
+                bodyWeight /= 2.20462;
+            }
+
+            // Call the appropriate calculation function based on the competition type
+            let wilksScore, dotsScore, ipfScore, ipfGLScore;
+            wilksScore = Calculate_OldWilks(bodyWeight, weightLifted, isFemale);
+            dotsScore = Calculate_DOTS(bodyWeight, weightLifted, isFemale);
+            ipfScore = Calculate_IPF(bodyWeight, weightLifted, isFemale, competition);
+            ipfGLScore = Calculate_IPFGL(bodyWeight, weightLifted, isFemale, competition);
+
+            return { wilksScore, dotsScore, ipfScore, ipfGLScore };
+        }
+
+        function calculateScores() {
+            // Get form inputs
+            var bodyWeight = parseFloat(document.getElementById('bodyWeight').value);
+            var weightLifted = parseFloat(document.getElementById('weightLifted').value);
+            var isFemale = document.querySelector('input[name="gender"]:checked').value === "true";
+            var isKG = document.querySelector('input[name="unit"]:checked').value === "true";
+            var event = document.querySelector('input[name="event"]:checked').value;
+            var category = document.querySelector('input[name="category"]:checked').value;
+
+            // Validation
+            if (isNaN(bodyWeight) || bodyWeight <= 0) {
+                document.getElementById('errorMessage').innerText = "Please enter a valid body weight.";
+                return;
+            }
+            if (isNaN(weightLifted) || weightLifted <= 0) {
+                document.getElementById('errorMessage').innerText = "Please enter a valid lifted weight.";
+                return;
+            }
+
+            // Clear error message
+            document.getElementById('errorMessage').innerText = "";
+
+            // Calculate scores
+            var scores = getScores(bodyWeight, weightLifted, isKG, isFemale, event.concat(category));
+
+            // Add scores to history panel
+            addToHistory(scores);
+        }
+
+        // Function to calculate scores based on input
+        function getScores(bodyWeight, weightLifted, isKG, isFemale, competition) {
+            var weightCoeff = 0.45359237;
+            var bw = isKG ? bodyWeight : bodyWeight * weightCoeff;
+            var wl = isKG ? weightLifted : weightLifted * weightCoeff;
+            var unit = isKG ? "KG" : "LB";
+
+            // Calculation functions (same as provided in React code)
+
+            return {
+                bodyWeight: bodyWeight,
+                weightLifted: weightLifted,
+                unit: unit,
+                IPFGL: Calculate_IPFGL(bw, wl, isFemale, competition), // Corrected function name
+                NewWilks: Calculate_NewWilks(bw, wl, isFemale),
+                DOTS: Calculate_DOTS(bw, wl, isFemale),
+                IPF: Calculate_IPF(bw, wl, isFemale, competition),
+                OldWilks: Calculate_OldWilks(bw, wl, isFemale)
+            };
+        }
+
+
+        // Function to add scores to history panel
+        function addToHistory(scores) {
+            var resultHistory = document.getElementById('resultHistory');
+            var resultBox = document.createElement('div');
+            resultBox.classList.add('result-box');
+
+            var contentDiv = document.createElement('div');
+            resultBox.appendChild(contentDiv);
+
+            var weightSpan = document.createElement('span');
+            weightSpan.classList.add('weight');
+            weightSpan.innerText = scores.bodyWeight;
+            contentDiv.appendChild(weightSpan);
+            
+            var unitSpan = document.createElement('span');
+            unitSpan.innerText = scores.unit;
+            contentDiv.appendChild(unitSpan);
+
+            var unitSpan1 = document.createElement('span');
+            unitSpan1.innerText = " lifting";
+            contentDiv.appendChild(unitSpan1);
+
+            var liftedSpan = document.createElement('span');
+            liftedSpan.classList.add('weight');
+            liftedSpan.innerText = scores.weightLifted;
+            contentDiv.appendChild(liftedSpan);
+
+            var unitSpan2 = document.createElement('span');
+            unitSpan2.innerText = scores.unit;
+            contentDiv.appendChild(unitSpan2);
+            
+            var ipfGLSpan = document.createElement('span');
+            ipfGLSpan.innerHTML = "IPF-GL: " + "<b>" + scores.IPFGL + "<b>";
+            ipfGLSpan.classList.add('score-box');
+            resultBox.appendChild(ipfGLSpan);
+
+            var newWilksSpan = document.createElement('span');
+            newWilksSpan.innerHTML = "Wilks2: " + "<b>" + scores.NewWilks + "<b>";
+            newWilksSpan.classList.add('score-box');
+            resultBox.appendChild(newWilksSpan);
+
+            var dotsSpan = document.createElement('span');
+            dotsSpan.innerHTML = "DOTS: " + "<b>" + scores.DOTS + "<b>";
+            dotsSpan.classList.add('score-box');
+            resultBox.appendChild(dotsSpan);
+
+            var ipfSpan = document.createElement('span');
+            ipfSpan.innerHTML = "IPF: " + "<br>" + "<b>" + scores.IPF + "<b>";
+            ipfSpan.classList.add('score-box');
+            resultBox.appendChild(ipfSpan);
+
+            var oldWilksSpan = document.createElement('span');
+            oldWilksSpan.innerHTML = "Old Wilks: " + "<b>" + scores.OldWilks + "<b>";
+            oldWilksSpan.classList.add('score-box');
+            resultBox.appendChild(oldWilksSpan);
+
+            resultHistory.appendChild(resultBox);
+        }
+    </script>
+</body>
+
+</html>
